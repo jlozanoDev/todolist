@@ -3,6 +3,22 @@ import { computed, ref, watch } from 'vue'
 const STORAGE_KEY = 'todos-v1'
 const VALID_FILTERS = new Set(['all', 'active', 'completed'])
 
+/**
+ * Provide reactive todo state, derived counts/filters, and CRUD operations for managing todos persisted to localStorage.
+ *
+ * @returns {{todos: import('vue').Ref<Array<Object>>, filter: import('vue').Ref<string>, activeCount: import('vue').Ref<number>, completedCount: import('vue').Ref<number>, filteredTodos: import('vue').Ref<Array<Object>>, addTodo: function(string): boolean, updateTodo: function(string, string): boolean, toggleTodo: function(string): void, deleteTodo: function(string): void, clearCompleted: function(): void, setFilter: function(string): void}}
+ * @property {import('vue').Ref<Array<Object>>} todos - Reactive array of todo objects ({ id, text, completed, createdAt }).
+ * @property {import('vue').Ref<string>} filter - Current filter value: 'all', 'active', or 'completed'.
+ * @property {import('vue').Ref<number>} activeCount - Number of todos with `completed === false`.
+ * @property {import('vue').Ref<number>} completedCount - Number of todos with `completed === true`.
+ * @property {import('vue').Ref<Array<Object>>} filteredTodos - Todos filtered according to `filter`.
+ * @property {function(string): boolean} addTodo - Add a trimmed todo; returns `true` on success, `false` if text is empty.
+ * @property {function(string, string): boolean} updateTodo - Update a todo's text by id; returns `true` on success, `false` if text is empty or todo not found.
+ * @property {function(string): void} toggleTodo - Toggle the `completed` state of the todo with the given id.
+ * @property {function(string): void} deleteTodo - Remove the todo with the given id.
+ * @property {function(): void} clearCompleted - Remove all todos whose `completed` is `true`.
+ * @property {function(string): void} setFilter - Set the active filter; unknown values are normalized to 'all'.
+ */
 export function useTodos() {
   const todos = ref(loadTodos())
   const filter = ref('all')
@@ -95,6 +111,15 @@ export function useTodos() {
   }
 }
 
+/**
+ * Load and normalize stored todos from localStorage under STORAGE_KEY.
+ *
+ * Normalizes each item to an object with `id` (string), `text` (string),
+ * `completed` (boolean), and `createdAt` (number). If no valid stored data
+ * exists or parsing fails, returns an empty array.
+ *
+ * @returns {Array<{id: string, text: string, completed: boolean, createdAt: number}>} The array of normalized todos, or `[]` when none are available or on error.
+ */
 function loadTodos() {
   try {
     const stored = localStorage.getItem(STORAGE_KEY)
