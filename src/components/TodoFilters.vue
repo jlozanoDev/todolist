@@ -17,9 +17,9 @@ const props = defineProps({
 const emit = defineEmits(['change-filter', 'clear-completed'])
 
 const filters = [
-  { label: 'All', value: 'all' },
-  { label: 'Active', value: 'active' },
-  { label: 'Completed', value: 'completed' }
+  { label: 'Todas', value: 'all' },
+  { label: 'Activas', value: 'active' },
+  { label: 'Completadas', value: 'completed' }
 ]
 </script>
 
